@@ -55,16 +55,24 @@ export const claimAdmin = mutation({
 });
 
 /**
- * Load the starter content set. Guarded to the owner email or an active
- * admin, and only inserts into tables that are still empty, so it can never
- * overwrite or duplicate existing edits.
+ * Load the starter content set. Only inserts into tables that are still
+ * empty, so it can never overwrite or duplicate existing edits. The call is
+ * allowed for: the owner email, an active admin, or anyone at all while the
+ * database is completely empty. That last branch exists so the first page
+ * load can publish the real starter set once; the moment any content exists,
+ * every write path requires the admin role.
  */
 export const seedContent = mutation({
   args: {},
   handler: async (ctx) => {
-    const allowed =
-      (await isAdmin(ctx)) || (await currentEmail(ctx)) === SITE_ADMIN_EMAIL;
-    if (!allowed) {
+    const email = await currentEmail(ctx);
+    const admin = await isAdmin(ctx);
+    const projectCount = (await ctx.db.query("projects").collect()).length;
+    const academicCount = (await ctx.db.query("academicEntries").collect())
+      .length;
+    const blogCount = (await ctx.db.query("blogPosts").collect()).length;
+    const empty = projectCount === 0 && academicCount === 0 && blogCount === 0;
+    if (!admin && email !== SITE_ADMIN_EMAIL && !empty) {
       throw new Error("Owner only.");
     }
     const stamp = now();
@@ -72,7 +80,7 @@ export const seedContent = mutation({
     let academic = 0;
     let blog = 0;
 
-    if ((await ctx.db.query("projects").collect()).length === 0) {
+    if (projectCount === 0) {
       for (const p of starterProjects) {
         await ctx.db.insert("projects", {
           ...p,
@@ -82,7 +90,7 @@ export const seedContent = mutation({
         projects += 1;
       }
     }
-    if ((await ctx.db.query("academicEntries").collect()).length === 0) {
+    if (academicCount === 0) {
       for (const a of starterAcademic) {
         await ctx.db.insert("academicEntries", {
           ...a,
@@ -92,7 +100,7 @@ export const seedContent = mutation({
         academic += 1;
       }
     }
-    if ((await ctx.db.query("blogPosts").collect()).length === 0) {
+    if (blogCount === 0) {
       for (const b of starterBlog) {
         await ctx.db.insert("blogPosts", {
           ...b,

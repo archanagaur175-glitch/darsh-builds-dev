@@ -1,26 +1,32 @@
-import { motion } from "framer-motion";
+import { Link } from "react-router";
+import { Seo } from "@/components/Seo";
+import { SiteHeader } from "@/components/layout/SiteHeader";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 
 export default function NotFound() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen flex flex-col"
-    >
-
-      
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center">
-        <div className="max-w-5xl mx-auto relative px-4">
-          <div className="flex items-center justify-center min-h-[200px]">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
-              <p className="text-lg text-gray-600">Page Not Found</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
+    <div className="min-h-screen bg-background text-foreground">
+      <Seo title="404" />
+      <SiteHeader />
+      <main className="mx-auto flex w-full max-w-6xl flex-col items-center px-4 py-28 text-center sm:px-6">
+        <p className="font-mono text-xs uppercase tracking-wider text-accent">
+          exit code 404
+        </p>
+        <h1 className="mt-4 font-mono text-5xl font-bold tracking-tight sm:text-6xl">
+          Not found
+        </h1>
+        <p className="mt-4 max-w-md font-mono text-sm leading-6 text-muted-foreground">
+          The route you requested does not exist on this server. Check the
+          spelling and try again.
+        </p>
+        <Link
+          to="/"
+          className="mt-8 inline-flex items-center gap-2 rounded-[2px] bg-foreground px-5 py-2.5 font-mono text-sm font-semibold text-background transition-opacity hover:opacity-85"
+        >
+          cd ~/
+        </Link>
+      </main>
+      <SiteFooter />
+    </div>
   );
 }
