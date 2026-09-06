@@ -1,0 +1,104 @@
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { isAdmin, now } from "./helpers";
+
+const projectFields = {
+  slug: v.string(),
+  title: v.string(),
+  summary: v.string(),
+  architecture: v.string(),
+  stack: v.array(v.string()),
+  repoOwner: v.string(),
+  repoName: v.string(),
+  demoUrl: v.optional(v.string()),
+  docsUrl: v.optional(v.string()),
+  featured: v.boolean(),
+  scaffold: v.boolean(),
+  published: v.boolean(),
+  order: v.number(),
+};
+
+// Public queries ------------------------------------------------------------
+
+/** Published projects in showcase order (card fields, no architecture body). */
+export const list = query({
+  args: {},
+  handler: async (ctx) => {
+    const rows = await ctx.db.query("projects").collect();
+    return rows
+      .filter((p) => p.published)
+      .sort((a, b) => a.order - b.order)
+      .map((p) => ({
+        _id: p._id,
+        slug: p.slug,
+        title: p.title,
+        summary: p.summary,
+        stack: p.stack,
+        repoOwner: p.repoOwner,
+        repoName: p.repoName,
+        demoUrl: p.demoUrl,
+        docsUrl: p.docsUrl,
+        featured: p.featured,
+        scaffold: p.scaffold,
+        order: p.order,
+        updatedAt: p.updatedAt,
+      }));
+  },
+});
+
+/** Full published project, including the architecture markdown body. */
+export const get = query({
+  args: { slug: v.string() },
+  handler: async (ctx, { slug }) => {
+    const rows = await ctx.db.query("projects").collect();
+    const row = rows.find((p) => p.slug === slug && p.published);
+    return row ?? null;
+  },
+});
+
+// Admin mutations -----------------------------------------------------------
+
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    if (!(await isAdmin(ctx))) {
+      throw new Error("Admin only.");
+    }
+    const rows = await ctx.db.query("projects").collect();
+    return rows.sort((a, b) => a.order - b.order);
+  },
+});
+
+export const save = mutation({
+  args: { id: v.optional(v.id("projects")), ...projectFields },
+  handler: async (ctx, args) => {
+    if (!(await isAdmin(ctx))) {
+      throw new Error("Admin only.");
+    }
+    const stamp = now();
+    const { id, ...fields } = args;
+    if (id) {
+      const existing = await ctx.db.get(id);
+      if (!existing) {
+        throw new Error("Project not found.");
+      }
+      await ctx.db.patch(id, { ...fields, updatedAt: stamp });
+      return id;
+    }
+    return await ctx.db.insert("projects", {
+      ...fields,
+      createdAt: stamp,
+      updatedAt: stamp,
+    });
+  },
+});
+
+export const remove = mutation({
+  args: { id: v.id("projects") },
+  handler: async (ctx, { id }) => {
+    if (!(await isAdmin(ctx))) {
+      throw new Error("Admin only.");
+    }
+    await ctx.db.delete(id);
+  },
+});
