@@ -51,6 +51,7 @@ const schema = defineSchema(
       docsUrl: v.optional(v.string()), // docs / readme link if one exists
       featured: v.boolean(), // flagship projects shown on the landing page
       scaffold: v.boolean(), // true when the repo has no committed source yet
+      documented: v.boolean(), // false when the repo has no README or docs
       published: v.boolean(), // visible on public pages
       order: v.number(), // ascending sort for showcase order
       createdAt: v.number(),

@@ -4,6 +4,9 @@ import { cn } from "@/lib/utils";
 import { RepoStatsRow } from "./RepoStatsRow";
 import { GITHUB_URL } from "@/lib/site";
 
+const PLANNED_LABEL = "planned / not started";
+const UNDOCUMENTED_LABEL = "no readme yet";
+
 export type ProjectCardData = {
   slug: string;
   title: string;
@@ -14,6 +17,7 @@ export type ProjectCardData = {
   demoUrl?: string;
   featured: boolean;
   scaffold: boolean;
+  documented: boolean;
   order: number;
 };
 
@@ -23,7 +27,8 @@ export function ProjectCard({ project }: { project: ProjectCardData }) {
     <article
       className={cn(
         "group relative flex h-full flex-col rounded-[3px] border bg-card p-5 transition-colors",
-        project.featured ? "border-border" : "border-border/70",
+        project.featured && !project.scaffold ? "border-border" : "border-border/70",
+        project.scaffold ? "border-dashed" : "",
         "hover:border-accent/60",
       )}
     >
@@ -63,7 +68,14 @@ export function ProjectCard({ project }: { project: ProjectCardData }) {
         </span>
       </div>
 
-      <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
+      <p
+        className={cn(
+          "mt-3 line-clamp-3 text-sm leading-6",
+          project.scaffold
+            ? "font-mono text-xs text-muted-foreground/80"
+            : "text-muted-foreground",
+        )}
+      >
         {project.summary}
       </p>
 
@@ -76,11 +88,18 @@ export function ProjectCard({ project }: { project: ProjectCardData }) {
             {tag}
           </span>
         ))}
-        {project.scaffold && (
-          <span className="rounded-[2px] border border-border/80 px-1.5 py-0.5 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground/70">
-            no code yet
+        {project.scaffold ? (
+          <span className="rounded-[2px] border border-dashed border-border px-1.5 py-0.5 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground/70">
+            {PLANNED_LABEL}
           </span>
-        )}
+        ) : !project.documented ? (
+          <span
+            className="rounded-[2px] border border-border/80 bg-muted/60 px-1.5 py-0.5 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground/70"
+            title="This repository has no README; the entry sticks to repository facts"
+          >
+            {UNDOCUMENTED_LABEL}
+          </span>
+        ) : null}
       </div>
 
       <div className="mt-4 flex-1" />

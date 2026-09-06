@@ -1,10 +1,11 @@
 import { SITE_GITHUB_OWNER } from "./site";
 
 // Starter content for the Darsh Builds portfolio. Every project row maps to a
-// real public repository owned by SITE_GITHUB_OWNER. Descriptions and
-// architecture notes describe what is actually in each repository (verified
-// from the repo tree, package manifests and README files at seed time). They
-// are plain edits in /admin afterwards.
+// real public repository owned by SITE_GITHUB_OWNER. Copy describes only what
+// is actually in each repository (verified from the repo tree, package
+// manifests and README files at seed time), and repositories without any
+// committed documentation are explicitly flagged with documented: false so the
+// UI never styles them as finished, documented work.
 export type StarterProject = {
   slug: string;
   title: string;
@@ -17,6 +18,7 @@ export type StarterProject = {
   docsUrl?: string;
   featured: boolean;
   scaffold: boolean;
+  documented: boolean;
   published: boolean;
   order: number;
 };
@@ -28,17 +30,18 @@ export const starterProjects: StarterProject[] = [
     slug: "claritycrew03",
     title: "ClarityCrew Web",
     summary:
-      "ClarityCrew rebuilt as a web app for neurodivergent learners. package.json describes claritycrew 3.0.0 as an academic study app for neurodivergent learners.",
+      "Repository for claritycrew 3.0.0. package.json describes the project as an academic study app for neurodivergent learners. No README is committed, so the entry is limited to repository facts.",
     architecture: markdownHead([
-      "## What this repository is\n\npackage.json describes claritycrew 3.0.0 as an academic study app for neurodivergent learners. This repo holds the web generation of the project; the earlier mobile version lives in the ClarityCrew (Flutter) repository.",
+      "## Documentation status\n\nNo README is committed to this repository. Everything below comes from the repository contents, starting with the package.json description of claritycrew 3.0.0 as an academic study app for neurodivergent learners.",
       "## Repository layout\n\n- `src/app`: Next.js App Router routes\n- `src/components`: React UI components\n- `src/data`: content and curriculum data\n- `src/hooks` and `src/lib`: shared logic\n\nTop-level config: `next.config.ts`, `tsconfig.json`, `postcss.config.mjs`.",
-      "## Notable choices visible in the dependency set\n\n- Ships OpenDyslexic, Inter and Outfit fonts through `@fontsource`, an accessibility-first choice for a reading and study app.\n- Uses `next-themes` for theming and `lucide-react` for icons.",
+      "## Dependency set\n\nShips OpenDyslexic, Inter and Outfit fonts through `@fontsource`, `next-themes` for theming and `lucide-react` for icons.",
     ]),
-    stack: ["TypeScript", "React", "Next.js", "Accessibility"],
+    stack: ["TypeScript", "React", "Next.js"],
     repoOwner: SITE_GITHUB_OWNER,
     repoName: "claritycrew03",
     featured: true,
     scaffold: false,
+    documented: false,
     published: true,
     order: 1,
   },
@@ -46,10 +49,10 @@ export const starterProjects: StarterProject[] = [
     slug: "claritycrew",
     title: "ClarityCrew Mobile",
     summary:
-      "Adaptive learning companion for neurodivergent learners, built in Flutter. pubspec.yaml describes claritycrew 1.0.0 as an adaptive learning companion for neurodivergent learners.",
+      "Repository for claritycrew 1.0.0. pubspec.yaml describes the project as an adaptive learning companion for neurodivergent learners. A SPEC.md at the root documents the product contract.",
     architecture: markdownHead([
-      "## What this repository is\n\npubspec.yaml describes claritycrew as an adaptive learning companion for neurodivergent learners (version 1.0.0+1). This is the Flutter generation of ClarityCrew.",
-      "## Repository layout\n\n- `lib/`: split into `core`, `features`, `models`, `persistence`, `services` and `state`, with `main.dart` and `app.dart` entry points\n- `assets/content` and `assets/videos`: study content and video lesson assets\n- `tool/`: Python generators (`extract_lessons.py`, `generate_content_json.py`, `generate_videos.py`) that build content bundles\n- `SPEC.md` at the root documents the product contract",
+      "## What this repository is\n\npubspec.yaml describes claritycrew as an adaptive learning companion for neurodivergent learners (version 1.0.0+1). This is the Flutter generation of ClarityCrew, documented by SPEC.md at the repository root.",
+      "## Repository layout\n\n- `lib/`: split into `core`, `features`, `models`, `persistence`, `services` and `state`, with `main.dart` and `app.dart` entry points\n- `assets/content` and `assets/videos`: study content and video lesson assets\n- `tool/`: Python generators (`extract_lessons.py`, `generate_content_json.py`, `generate_videos.py`) that build content bundles",
       "## Stack notes\n\nProvider for state, shared_preferences for local persistence, video_player for lessons, and Firebase core plus Cloud Firestore for sync and storage.",
     ]),
     stack: ["Dart", "Flutter", "Firebase"],
@@ -57,6 +60,7 @@ export const starterProjects: StarterProject[] = [
     repoName: "ClarityCrew",
     featured: true,
     scaffold: false,
+    documented: true,
     published: true,
     order: 2,
   },
@@ -76,6 +80,7 @@ export const starterProjects: StarterProject[] = [
     demoUrl: "https://test-craft-sigma.vercel.app",
     featured: true,
     scaffold: false,
+    documented: true,
     published: true,
     order: 3,
   },
@@ -95,6 +100,7 @@ export const starterProjects: StarterProject[] = [
     demoUrl: "https://accesspath-jade.vercel.app",
     featured: true,
     scaffold: false,
+    documented: true,
     published: true,
     order: 4,
   },
@@ -113,6 +119,7 @@ export const starterProjects: StarterProject[] = [
     repoName: "ZeroTrace",
     featured: true,
     scaffold: false,
+    documented: true,
     published: true,
     order: 5,
   },
@@ -131,6 +138,7 @@ export const starterProjects: StarterProject[] = [
     repoName: "LumenSuite",
     featured: true,
     scaffold: false,
+    documented: true,
     published: true,
     order: 6,
   },
@@ -149,6 +157,7 @@ export const starterProjects: StarterProject[] = [
     repoName: "FairMeter",
     featured: false,
     scaffold: false,
+    documented: true,
     published: true,
     order: 7,
   },
@@ -156,17 +165,17 @@ export const starterProjects: StarterProject[] = [
     slug: "cbse-study-assistant",
     title: "CBSE Study Assistant",
     summary:
-      "CBSE study app with a Python data pipeline. Repo root holds Python loader and recommender scripts plus a chapter CSV, and the Flutter app lives under cbse_study_app.",
+      "Repository combining Python scripts and a Flutter app under cbse_study_app. No README is committed, so no product claims are made beyond the repository contents.",
     architecture: markdownHead([
-      "## What this repository is\n\nA study assistant for the CBSE curriculum split across two layers: Python tooling at the repo root and a Flutter app in `cbse_study_app/`.",
-      "## Python side\n\n- `main.py`, `data_loader.py`, `recommender.py` and `requirements.txt`\n- `cbse_chapters.csv` holds chapter data\n- `build_apk_colab.ipynb` and `buildozer.spec` support building an Android APK from Colab",
-      "## Flutter side\n\n`cbse_study_app/lib` contains the app source with its own pubspec. CI runs through `.github/workflows`.",
+      "## Documentation status\n\nNo README is committed to this repository. The description below is limited to what the files show.",
+      "## Repository layout\n\n- Root level: `main.py`, `data_loader.py`, `recommender.py`, `requirements.txt` and `cbse_chapters.csv`\n- `build_apk_colab.ipynb` and `buildozer.spec` for building an Android APK from Colab\n- `cbse_study_app/`: Flutter app with its own pubspec and lib source\n- CI via `.github/workflows`",
     ]),
     stack: ["Dart", "Flutter", "Python"],
     repoOwner: SITE_GITHUB_OWNER,
     repoName: "cbse-study-assistant",
     featured: false,
     scaffold: false,
+    documented: false,
     published: true,
     order: 8,
   },
@@ -174,16 +183,17 @@ export const starterProjects: StarterProject[] = [
     slug: "mirage",
     title: "Mirage",
     summary:
-      "C# desktop project organized as Mirage.App, Mirage.Core, Mirage.Native and Mirage.Tests, with architecture and trust documentation in docs/.",
+      "C# desktop project organized as Mirage.App, Mirage.Core, Mirage.Native and Mirage.Tests, with an ARCHITECTURE.md document in docs/.",
     architecture: markdownHead([
-      "## Repository layout\n\n- `src/Mirage.App`: application project (XAML UI)\n- `src/Mirage.Core`: core logic\n- `src/Mirage.Native`: native integration layer\n- `src/Mirage.Tests`: tests\n- `docs/`: ARCHITECTURE.md, REVERT.md and TRUST.md\n- `global.json` pins the SDK",
-      "## Notes\n\nThe README, CONTRIBUTING and LICENSE files exist at the root. No README body is committed, so functional claims beyond the module split are not made here.",
+      "## Documentation\n\nA README and docs/ARCHITECTURE.md exist in the repository.",
+      "## Repository layout\n\n- `src/Mirage.App`: application project (XAML UI)\n- `src/Mirage.Core`: core logic\n- `src/Mirage.Native`: native integration layer\n- `src/Mirage.Tests`: tests\n- `global.json` pins the SDK",
     ]),
     stack: ["C#", ".NET", "XAML"],
     repoOwner: SITE_GITHUB_OWNER,
     repoName: "Mirage",
     featured: false,
     scaffold: false,
+    documented: true,
     published: true,
     order: 9,
   },
@@ -193,14 +203,15 @@ export const starterProjects: StarterProject[] = [
     summary:
       "C# desktop solution with BackDrop.App, BackDrop.Core and BackDrop.Tests projects plus shared build props and a tools/ folder.",
     architecture: markdownHead([
-      "## Repository layout\n\n- `BackDrop.sln` with `src/BackDrop.App`, `src/BackDrop.Core` and `src/BackDrop.Tests`\n- `Directory.Build.props` and `global.json` for shared build configuration\n- `docs/` with an architecture note and README\n- `tools/make-icon.sh` for icon generation",
-      "## Notes\n\nNo README body is committed, so this entry only describes the observable structure.",
+      "## Documentation\n\nA README and docs/ exist in the repository.",
+      "## Repository layout\n\n- `BackDrop.sln` with `src/BackDrop.App`, `src/BackDrop.Core` and `src/BackDrop.Tests`\n- `Directory.Build.props` and `global.json` for shared build configuration\n- `tools/make-icon.sh` for icon generation",
     ]),
     stack: ["C#", ".NET", "XAML"],
     repoOwner: SITE_GITHUB_OWNER,
     repoName: "BackDrop",
     featured: false,
     scaffold: false,
+    documented: true,
     published: true,
     order: 10,
   },
@@ -210,14 +221,16 @@ export const starterProjects: StarterProject[] = [
     summary:
       "Multi-module Kotlin Android project: feature modules for circadian rhythm, sleep debt, smart alarm and dashboard sit on shared core modules.",
     architecture: markdownHead([
+      "## Documentation\n\nA README exists at the repository root.",
       "## Repository layout\n\n- `core/`: `core-common`, `core-database`, `core-ui`\n- `feature/`: `circadian`, `dashboard`, `logger`, `sleepdebt`, `smartalarm`\n- `app/`: application module\n- Gradle version catalog in `gradle/libs.versions.toml`, CI in `.github/workflows`",
-      "## Notes\n\nThe module names indicate a sleep and circadian rhythm product. No README body is committed, so functional claims are limited to what the module structure shows.",
+      "## Notes\n\nThe module names indicate a sleep and circadian rhythm product. Claims beyond the module structure are not made here.",
     ]),
     stack: ["Kotlin", "Android", "Jetpack Compose"],
     repoOwner: SITE_GITHUB_OWNER,
     repoName: "DreamTeam",
     featured: false,
     scaffold: false,
+    documented: true,
     published: true,
     order: 11,
   },
@@ -227,14 +240,15 @@ export const starterProjects: StarterProject[] = [
     summary:
       "Kotlin Android project with a local SQLite store committed under .freebuff/desktop-v2.db, a single app module and CI workflow.",
     architecture: markdownHead([
+      "## Documentation\n\nA README exists at the repository root.",
       "## Repository layout\n\n- `app/src` with Kotlin sources and XML resources\n- Local SQLite database files under `.freebuff/`\n- Gradle wrapper and version catalog, CI in `.github/workflows`",
-      "## Notes\n\nNo README body is committed; this entry describes the observable structure only.",
     ]),
     stack: ["Kotlin", "Android", "SQLite"],
     repoOwner: SITE_GITHUB_OWNER,
     repoName: "Awake",
     featured: false,
     scaffold: false,
+    documented: true,
     published: true,
     order: 12,
   },
@@ -242,16 +256,17 @@ export const starterProjects: StarterProject[] = [
     slug: "housiness",
     title: "Housiness",
     summary:
-      "Kotlin Android application with a single app module, Gradle Kotlin DSL build and CI workflow.",
+      "Kotlin Android project with a single app module under app/src. No README is committed, so the entry is limited to repository facts.",
     architecture: markdownHead([
+      "## Documentation status\n\nNo README is committed to this repository. The description below is limited to what the files show.",
       "## Repository layout\n\n- `app/src` with Kotlin sources and XML resources\n- Gradle wrapper, version catalog and CI in `.github/workflows`",
-      "## Notes\n\nNo README body is committed; this entry describes the observable structure only.",
     ]),
-    stack: ["Kotlin", "Android", "Jetpack Compose"],
+    stack: ["Kotlin", "Android"],
     repoOwner: SITE_GITHUB_OWNER,
     repoName: "housiness",
     featured: false,
     scaffold: false,
+    documented: false,
     published: true,
     order: 13,
   },
@@ -259,16 +274,17 @@ export const starterProjects: StarterProject[] = [
     slug: "springboard",
     title: "Springboard",
     summary:
-      "Kotlin Android application with a single app module, proguard rules, Gradle wrapper and CI workflow.",
+      "Kotlin Android project with a single app module under app/src. No README is committed, so the entry is limited to repository facts.",
     architecture: markdownHead([
+      "## Documentation status\n\nNo README is committed to this repository. The description below is limited to what the files show.",
       "## Repository layout\n\n- `app/src` with Kotlin sources and resources\n- `app/proguard-rules.pro`, Gradle version catalog and CI in `.github/workflows`",
-      "## Notes\n\nNo README body is committed; this entry describes the observable structure only.",
     ]),
     stack: ["Kotlin", "Android"],
     repoOwner: SITE_GITHUB_OWNER,
     repoName: "Springboard",
     featured: false,
     scaffold: false,
+    documented: false,
     published: true,
     order: 14,
   },
@@ -278,62 +294,57 @@ export const starterProjects: StarterProject[] = [
     summary:
       "Two-part project: a Python daemon (with pyinstaller build and tests) plus a desktop HUD built with Svelte, Tauri and pnpm.",
     architecture: markdownHead([
+      "## Documentation\n\nA README and third-party notices exist at the repository root.",
       "## Repository layout\n\n- `daemon/`: Python with `pyproject.toml`, `src/` and `tests/`, built via `build_daemon.ps1` and pyinstaller\n- `hud/`: Svelte frontend (`hud/src`, Svelte config) with a Tauri shell (`hud/src-tauri`) and pnpm workspace\n- Root LICENSE, NOTICE and THIRD_PARTY_NOTICES.md",
-      "## Notes\n\nThe repo is otherwise un-documented at the root; this entry describes the observable structure.",
     ]),
     stack: ["Python", "Svelte", "Tauri", "TypeScript"],
     repoOwner: SITE_GITHUB_OWNER,
     repoName: "BlankSlate",
     featured: false,
     scaffold: false,
+    documented: true,
     published: true,
     order: 15,
   },
   {
     slug: "darshbuilds",
     title: "darshbuilds",
-    summary:
-      "Repository for this portfolio site. It held no committed source at seed time.",
-    architecture: markdownHead([
-      "## Status\n\nThis repository is the deployment home for the Darsh Builds portfolio. At seed time the public repository contained no files.",
-    ]),
+    summary: "Planned / not yet started. No code committed.",
+    architecture: "",
     stack: [],
     repoOwner: SITE_GITHUB_OWNER,
     repoName: "darshbuilds",
     featured: false,
     scaffold: true,
+    documented: false,
     published: true,
     order: 16,
   },
   {
     slug: "neon-drift",
     title: "Neon-Drift",
-    summary:
-      "Repository created in August 2026 with no committed source at seed time.",
-    architecture: markdownHead([
-      "## Status\n\nNo code is committed to this repository yet.",
-    ]),
+    summary: "Planned / not yet started. No code committed.",
+    architecture: "",
     stack: [],
     repoOwner: SITE_GITHUB_OWNER,
     repoName: "Neon-Drift",
     featured: false,
     scaffold: true,
+    documented: false,
     published: true,
     order: 17,
   },
   {
     slug: "pothole",
     title: "Pothole",
-    summary:
-      "Repository from 2025 with no committed source at seed time.",
-    architecture: markdownHead([
-      "## Status\n\nNo code is committed to this repository yet.",
-    ]),
+    summary: "Planned / not yet started. No code committed.",
+    architecture: "",
     stack: [],
     repoOwner: SITE_GITHUB_OWNER,
     repoName: "pothole",
     featured: false,
     scaffold: true,
+    documented: false,
     published: true,
     order: 18,
   },
@@ -351,6 +362,7 @@ export const starterProjects: StarterProject[] = [
     demoUrl: "https://accesspath-jade.vercel.app",
     featured: false,
     scaffold: false,
+    documented: true,
     published: true,
     order: 19,
   },

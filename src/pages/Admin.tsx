@@ -94,6 +94,7 @@ const emptyProject = {
   docsUrl: "",
   featured: false,
   scaffold: false,
+  documented: true,
   published: true,
   order: 99,
 };
@@ -121,6 +122,7 @@ function ProjectsManager() {
       docsUrl: p.docsUrl ?? "",
       featured: p.featured,
       scaffold: p.scaffold,
+      documented: p.documented ?? true,
       published: p.published,
       order: p.order,
     });
@@ -151,6 +153,7 @@ function ProjectsManager() {
         docsUrl: draft.docsUrl.trim() || undefined,
         featured: draft.featured,
         scaffold: draft.scaffold,
+        documented: draft.documented,
         published: draft.published,
         order: Number(draft.order) || 99,
       });
@@ -267,6 +270,11 @@ function ProjectsManager() {
               label="scaffold"
               checked={draft.scaffold}
               onChange={(v) => setDraft({ ...draft, scaffold: v })}
+            />
+            <Toggle
+              label="documented"
+              checked={draft.documented}
+              onChange={(v) => setDraft({ ...draft, documented: v })}
             />
             <Toggle
               label="published"
@@ -874,7 +882,29 @@ function BlogManager() {
 
 function AdminWorkspace() {
   const { signOut } = useAuth();
+  const restoreContent = useMutation(api.admin.restoreContent);
+  const [restoring, setRestoring] = useState(false);
+  const [restoreNotice, setRestoreNotice] = useState<string | null>(null);
   const [tab, setTab] = useState<"projects" | "academic" | "blog">("projects");
+
+  const handleRestore = async () => {
+    const ok = window.confirm(
+      "This deletes every project, academic entry and blog post in the database and reloads the starter set. Any edits you made will be lost. Continue?",
+    );
+    if (!ok) return;
+    setRestoring(true);
+    setRestoreNotice(null);
+    try {
+      const r = await restoreContent();
+      setRestoreNotice(
+        `Starter set restored: ${r.restored.projects} projects, ${r.restored.academic} academic entries, ${r.restored.blog} posts.`,
+      );
+    } catch (e) {
+      setRestoreNotice(e instanceof Error ? e.message : "Restore failed.");
+    } finally {
+      setRestoring(false);
+    }
+  };
   const tabs = [
     { id: "projects" as const, label: "Projects" },
     { id: "academic" as const, label: "Academic" },
@@ -903,11 +933,31 @@ function AdminWorkspace() {
           type="button"
           variant="outline"
           size="sm"
+          onClick={handleRestore}
+          disabled={restoring}
+          title="Deletes all content and reloads the curated starter set"
+        >
+          {restoring ? (
+            <Loader2 className="size-3.5 animate-spin" />
+          ) : (
+            <Save className="size-3.5" />
+          )}
+          Restore starter set
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
           onClick={() => void signOut()}
         >
           <LogOut className="size-3.5" /> Sign out
         </Button>
       </div>
+      {restoreNotice && (
+        <p className="mt-3 rounded-[2px] border border-accent/40 bg-accent/5 px-3 py-2 font-mono text-xs text-accent">
+          {restoreNotice}
+        </p>
+      )}
 
       <div className="mt-6">
         {tab === "projects" && <ProjectsManager />}

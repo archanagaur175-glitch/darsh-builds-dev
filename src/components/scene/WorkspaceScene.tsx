@@ -148,6 +148,10 @@ export default function WorkspaceScene({
 
   return (
     <div className="relative h-[440px] w-full overflow-hidden rounded-[3px] border border-border bg-blueprint">
+      {/* frameloop intentionally stays at the default "always" while this scene
+          is mounted so the slow idle rotation renders continuously; a demand
+          loop would freeze it between interaction frames. The scene is tiny
+          (one instanced mesh, one line buffer) so the cost is negligible. */}
       <Canvas
         dpr={[1, 2]}
         camera={{ position: [0, 5.2, 14.5], fov: 42 }}

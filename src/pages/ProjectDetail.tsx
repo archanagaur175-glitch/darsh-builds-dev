@@ -112,8 +112,16 @@ export default function ProjectDetail() {
                 </span>
               )}
               {project.scaffold && (
-                <span className="rounded-[2px] border border-border/80 bg-muted/60 px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-wider text-muted-foreground">
-                  no code committed yet
+                <span className="rounded-[2px] border border-dashed border-border px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-wider text-muted-foreground">
+                  planned / not started
+                </span>
+              )}
+              {!project.scaffold && !project.documented && (
+                <span
+                  className="rounded-[2px] border border-border/80 bg-muted/60 px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-wider text-muted-foreground"
+                  title="This repository has no README at the time of writing"
+                >
+                  no readme yet
                 </span>
               )}
             </div>
@@ -133,6 +141,13 @@ export default function ProjectDetail() {
             <p className="mt-5 max-w-2xl text-[15px] leading-7 text-muted-foreground">
               {project.summary}
             </p>
+            {!project.scaffold && !project.documented && (
+              <p className="mt-4 max-w-2xl rounded-[2px] border border-dashed border-border px-3 py-2 font-mono text-[11px] leading-5 text-muted-foreground/80">
+                Documentation note: this repository has no README. The writeup
+                below is limited to structure and manifest facts that can be
+                verified from the repository itself.
+              </p>
+            )}
 
             <div className="mt-4 flex flex-wrap items-center gap-1.5">
               {project.stack.map((tag) => (
@@ -148,6 +163,11 @@ export default function ProjectDetail() {
             <div className="mt-10">
               {project.architecture.trim() ? (
                 <MarkdownBody>{project.architecture}</MarkdownBody>
+              ) : project.scaffold ? (
+                <p className="rounded-[3px] border border-dashed border-border px-4 py-8 font-mono text-sm text-muted-foreground">
+                  Planned / not yet started. No code is committed to this
+                  repository, so there is nothing to describe yet.
+                </p>
               ) : (
                 <p className="rounded-[3px] border border-dashed border-border px-4 py-8 font-mono text-sm text-muted-foreground">
                   No architecture writeup is published for this project yet.

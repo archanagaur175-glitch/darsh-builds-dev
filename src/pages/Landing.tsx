@@ -51,14 +51,18 @@ export default function Landing() {
     });
   }, [projects, academic, seedContent]);
   const loadedProjects = projects ?? [];
-  const sceneProjects: SceneProject[] = loadedProjects.map((p) => ({
-    slug: p.slug,
-    title: p.title,
-    summary: p.summary,
-    repoOwner: p.repoOwner,
-    repoName: p.repoName,
-    order: p.order,
-  }));
+  // The 3D map is deliberately capped to featured projects so the scene stays
+  // readable and fast; the full list is always available in the 2D grid below.
+  const sceneProjects: SceneProject[] = loadedProjects
+    .filter((p) => p.featured && !p.scaffold)
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      summary: p.summary,
+      repoOwner: p.repoOwner,
+      repoName: p.repoName,
+      order: p.order,
+    }));
   const coursework = (academic ?? []).filter((e) => e.kind === "coursework");
   const research = (academic ?? []).filter((e) => e.kind === "research");
 

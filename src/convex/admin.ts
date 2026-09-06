@@ -113,3 +113,53 @@ export const seedContent = mutation({
     return { inserted: { projects, academic, blog } };
   },
 });
+
+/**
+ * Admin only. Clears all three content tables and reloads the starter set.
+ * Used to apply upstream starter-content revisions (copy fixes, new repo
+ * entries) to a database that was already seeded.
+ */
+export const restoreContent = mutation({
+  args: {},
+  handler: async (ctx) => {
+    if (!(await isAdmin(ctx))) {
+      throw new Error("Admin only.");
+    }
+    const stamp = now();
+    const tables = ["projects", "academicEntries", "blogPosts"] as const;
+    for (const table of tables) {
+      const rows = await ctx.db.query(table).collect();
+      for (const row of rows) {
+        await ctx.db.delete(row._id);
+      }
+    }
+    for (const p of starterProjects) {
+      await ctx.db.insert("projects", {
+        ...p,
+        createdAt: stamp,
+        updatedAt: stamp,
+      });
+    }
+    for (const a of starterAcademic) {
+      await ctx.db.insert("academicEntries", {
+        ...a,
+        createdAt: stamp,
+        updatedAt: stamp,
+      });
+    }
+    for (const b of starterBlog) {
+      await ctx.db.insert("blogPosts", {
+        ...b,
+        createdAt: stamp,
+        updatedAt: stamp,
+      });
+    }
+    return {
+      restored: {
+        projects: starterProjects.length,
+        academic: starterAcademic.length,
+        blog: starterBlog.length,
+      },
+    };
+  },
+});

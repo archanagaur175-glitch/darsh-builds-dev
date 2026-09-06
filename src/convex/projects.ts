@@ -40,6 +40,7 @@ export const list = query({
         docsUrl: p.docsUrl,
         featured: p.featured,
         scaffold: p.scaffold,
+        documented: p.documented !== false,
         order: p.order,
         updatedAt: p.updatedAt,
       }));
@@ -52,7 +53,8 @@ export const get = query({
   handler: async (ctx, { slug }) => {
     const rows = await ctx.db.query("projects").collect();
     const row = rows.find((p) => p.slug === slug && p.published);
-    return row ?? null;
+    if (!row) return null;
+    return { ...row, documented: row.documented !== false };
   },
 });
 
@@ -65,28 +67,37 @@ export const listAll = query({
       throw new Error("Admin only.");
     }
     const rows = await ctx.db.query("projects").collect();
-    return rows.sort((a, b) => a.order - b.order);
+    return rows
+      .sort((a, b) => a.order - b.order)
+      .map((p) => ({ ...p, documented: p.documented !== false }));
   },
 });
 
 export const save = mutation({
-  args: { id: v.optional(v.id("projects")), ...projectFields },
+  args: {
+    id: v.optional(v.id("projects")),
+    documented: v.optional(v.boolean()),
+    ...projectFields,
+  },
   handler: async (ctx, args) => {
     if (!(await isAdmin(ctx))) {
       throw new Error("Admin only.");
     }
     const stamp = now();
-    const { id, ...fields } = args;
+    const { id, documented, ...fields } = args;
+    // Legacy rows stored before the flag existed default to documented.
+    const flag = documented ?? true;
     if (id) {
       const existing = await ctx.db.get(id);
       if (!existing) {
         throw new Error("Project not found.");
       }
-      await ctx.db.patch(id, { ...fields, updatedAt: stamp });
+      await ctx.db.patch(id, { ...fields, documented: flag, updatedAt: stamp });
       return id;
     }
     return await ctx.db.insert("projects", {
       ...fields,
+      documented: flag,
       createdAt: stamp,
       updatedAt: stamp,
     });
